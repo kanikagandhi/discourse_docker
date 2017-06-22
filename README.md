@@ -40,11 +40,16 @@ To install docker and make the docker image of discourse follow these steps:
 	
 	Answer the following questions when prompted:
 
-	Hostname for your Discourse? [discourse.example.com]: 
-	Email address for admin account? [me@example.com]: 
+	Hostname for your Discourse? [discourse.example.com]:
+	
+	Email address for admin account? [me@example.com]:
+	
 	SMTP server address? [smtp.example.com]: 
+	
 	SMTP user name? [postmaster@discourse.example.com]: 
+	
 	SMTP port [587]:
+	
 	SMTP password? []: 
 
 	Edit containers/app.yml
@@ -66,14 +71,23 @@ To install docker and make the docker image of discourse follow these steps:
 	
 Create your Nginx configuration. Created /etc/nginx/sites-available/??????????.conf:
 
-upstream discourse {
-    server 127.0.0.1:80;
-}
-server {
-    listen 80 default_server;
+upstream discourse
 
-    root /var/www/??????.????????.com/public;
-    index index.html index.htm;
+{
+
+	server 127.0.0.1:80;
+	
+}
+
+server 
+
+{
+
+   listen 80 default_server;
+   
+   root /var/www/??????.????????.com/public;
+   
+   index index.html index.htm;
 
     access_log /var/log/nginx/??????.????????.com.log;
     error_log  /var/log/nginx/??????.????????.com-error.log error;
