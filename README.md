@@ -1,3 +1,118 @@
+To install docker and make the docker image of discourse follow these steps:
+
+1. Older versions of Docker were called docker or docker-engine. If these are installed, uninstall them: 
+
+	sudo apt-get remove docker docker-engine
+	
+2. Docker needs to use the aufs storage drivers:
+
+	sudo apt-get update
+	
+	sudo apt-get install \
+    	  linux-image-extra-$(uname -r) \
+    	  linux-image-extra-virtual
+	  
+3. Install the latest stable Docker:
+
+	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
+     		--recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+		
+	sudo sh -c "echo deb https://get.docker.com/ubuntu docker main \
+           	> /etc/apt/sources.list.d/docker.list"
+		
+	sudo apt-get update
+	
+	sudo apt-get install docker docker-engine 
+	
+4. Clone the git repository hosting the Discourse Docker configuration into the /var/discourse directory:
+
+	sudo -s
+	
+	mkdir /var/discourse
+	
+	git clone https://github.com/discourse/discourse_docker.git /var/discourse
+	
+	cd /var/discourse
+	
+5. Configure Discourse
+
+	./discourse-setup
+	
+	Answer the following questions when prompted:
+
+	Hostname for your Discourse? [discourse.example.com]: 
+	Email address for admin account? [me@example.com]: 
+	SMTP server address? [smtp.example.com]: 
+	SMTP user name? [postmaster@discourse.example.com]: 
+	SMTP port [587]:
+	SMTP password? []: 
+
+	Edit containers/app.yml
+	by editing the answers for the things above in env section
+	
+6. For the changes to be in effect:
+
+	./launcher rebuild app
+	
+7. If you need to use discourse remotely for your domain then install and configure Nginx on the server:
+
+	sudo apt-get install -y software-properties-common
+
+	sudo add-apt-repository -y ppa:nginx/stable
+	
+	sudo apt-get update
+	
+	sudo apt-get install -y nginx
+	
+Create your Nginx configuration. Created /etc/nginx/sites-available/??????????.conf:
+
+upstream discourse {
+    server 127.0.0.1:80;
+}
+server {
+    listen 80 default_server;
+
+    root /var/www/??????.????????.com/public;
+    index index.html index.htm;
+
+    access_log /var/log/nginx/??????.????????.com.log;
+    error_log  /var/log/nginx/??????.????????.com-error.log error;
+
+    server_name ??????.????????.com;
+
+    charset utf-8;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://discourse;
+
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+
+
+
+9. For nginx setup:
+
+	# Remove default config
+	sudo rm /etc/nginx/sites-enabled/default
+
+	# Symlink our new config
+	sudo ln -s /etc/nginx/sites-available/??????.conf \
+           /etc/nginx/sites-enabled/??????.conf
+
+	# Test configuration
+	sudo service nginx configtest
+
+	# If configtest checks out:
+	sudo service nginx reload
+
+10. Now run the discourse on the browser and register for discourse
+
+
 ### About
 
 - [Docker](https://docker.com/) is an open source project to pack, ship and run any Linux application in a lighter weight, faster container than a traditional virtual machine.
